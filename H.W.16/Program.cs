@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.IO;
 
 namespace H.W._16
 {
@@ -14,6 +15,7 @@ namespace H.W._16
     {
         static void Main(string[] args)
         {
+
             Product[] products = new Product[5];
             for (int i = 0; i < products.Length; i++)
             {
@@ -31,8 +33,37 @@ namespace H.W._16
                 WriteIndented = true
             };
             string jsonString = JsonSerializer.Serialize(products, options);
-            Console.WriteLine(jsonString);
+            string dr = "D:/H_W16";
+            string dr_json = "D:/H_W16/Product.json";
+
+            if (!Directory.Exists(dr))
+            {
+                Directory.CreateDirectory(dr);
+            }
+            using (StreamWriter st = new StreamWriter(dr_json, false))
+            {
+                st.Write(jsonString);
+            }
+
+            string text = File.ReadAllText(dr_json);
+            Product[] products1 = new Product[5];
+            products1 = JsonSerializer.Deserialize<Product[]>(text);
+            int ind = 0;
+            double MaxPrice = double.MinValue;
+            for (int i = 0; i < products1.Length; i++)
+            {
+                
+                double Value = products1[i].ProductPrice;
+                if (Value>MaxPrice)
+                {
+                    MaxPrice = Value;
+                    ind = i;
+                }
+            }
+           
+            Console.WriteLine("Самый дорогой товар {0}, с ценой {1}", products1[ind].ProductName, products1[ind].ProductPrice);
             Console.ReadKey();
+            
         }
     }
     class Product
